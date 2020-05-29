@@ -1,26 +1,16 @@
-# STAGE 1: Build 
-FROM golang:1.11-alpine AS build
+# Start from a Node.js 10 (LTS) image 
+FROM node:10 
 
-# Install Node and NPM 
-RUN apk update && apk upgrade && apk add --no-cache git nodejs bash npm 
+# Specify the directory inside the image in which all commands will run 
+WORKDIR /usr/src/app 
 
-# Get dependencies for Go part of build 
-RUN go get -u github.com/jteeuwen/go-bindata/... 
-RUN go get github.com/tools/godep 
-WORKDIR /go/src/github.com/kubernetes-up-and-running/kuard 
-# Copy all sources in 
-COPY . . 
-# This is a set of variables that the build script expects 
-ENV VERBOSE=0 
-ENV PKG=github.com/kubernetes-up-and-running/kuard 
-ENV ARCH=amd64 
-ENV VERSION=test 
+# Copy package files and install dependencies 
+COPY package*.json ./ 
 
-# Do the build. Script is part of incoming sources. 
-RUN build/build.sh
+RUN npm install 
 
-# STAGE 2: Deployment 
-FROM alpine AS deployment
-USER nobody:nobody 
-COPY --from=build /go/bin/kuard/ kuard 
-CMD ["/kuard"]
+# Copy all of the app files into the image
+COPY . .
+
+# The default command to run
+CMD ["npm", "start"]
