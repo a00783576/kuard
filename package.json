@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/a00783576/kuard#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.18.2"
   }
 }
